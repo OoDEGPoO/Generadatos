@@ -31,6 +31,10 @@ public class GeneraDatos {
     
     //------------ Ctes y Var comunes ------------
     private static final String[] tipos_disco = {"CD", "Vinilo", "Digital"};
+    private static final String[] paises = {"España", "Francia", "Italia"
+            , "Reino Unido", "Portugal", "Alemania", "Holanda", "Noruega"
+            , "Rusia", "Canada", "EEUU", "Japon", "Nueva Zelanda", "Australia"
+            , "Argentina", "Chile", "Brasil", "Bulgaria", "Mexico", "Venezuela"};
     private static long cod_cancion = 0;
     private static final long max_discos = 1000000;//1.000.000 de discos en la base de datos
     private static long cod_disco = 0;
@@ -44,6 +48,7 @@ public class GeneraDatos {
     private static final long num_conciertos = 100000;//100.000 numeros de conciertos
     private static long cod_concierto = 0;
     private static final long num_musicos = 1000000;//1.000.000 de musicos
+    private static long cod_musico = 0;
     private static final long num_grupos = 200000;//200.000 de grupos
     private static long cod_grupo = 0;
     private static long num_discos = max_discos/num_grupos;
@@ -111,6 +116,29 @@ public class GeneraDatos {
             salida_entradas.println(cod_entrada+","+localidad+i+","+precio+","
                     +usuario+cod_entrada+","+c_concierto);
             cod_entrada++;
+        }
+    }
+    
+    //Genera Conciertos
+    private static void generaConciertos(PrintWriter salida_conciertos, PrintWriter salida_entradas ){
+        
+    }
+    
+    //Genera Músicos
+    private static void generaMusicos(PrintWriter salida_musicos, long c_grupo, int integrantes){
+        for (int i = 0; i<integrantes; i++){
+            salida_musicos.println(cod_musico + "," + );
+            cod_musico++;
+        }
+    }
+    
+    //Genera Grupos
+    private static void generaGrupos(){
+        boolean flagm = true;
+        
+        for (long i = 1; i <= num_grupos; i++){
+            
+            generaMusicos()
         }
     }
 }
