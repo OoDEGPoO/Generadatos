@@ -27,6 +27,6 @@ public class DNI {
     }
     
     public static boolean checker(String dni){
-        return ;
+        return dni.contains(letra[Integer.getInteger(dni.subSequence(0, 7).toString()) % 23]);
     }
 }
