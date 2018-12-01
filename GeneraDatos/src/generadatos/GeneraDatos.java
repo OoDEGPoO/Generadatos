@@ -41,11 +41,11 @@ public class GeneraDatos {
     private static final int max_canciones_disco = 24;//de media 12
     private static final int min_duracion_canciones = 2;//mínimo de duración de las canciones
     private static final int max_duracion_canciones = 7;//máximo de duración de las canciones
-    private static final long num_entradas = 24000000;//24.000.000 de entradas en total
+    private static long num_entradas = 24000000;//24.000.000 de entradas disponibles en total
     private static long cod_entrada = 0;
     private static final long min_precio_entradas = 20;//mínimo precio posible de las entradas
     private static final long max_precio_entradas = 100;//máximo precio posible de las entradas
-    private static final long num_conciertos = 100000;//100.000 numeros de conciertos
+    private static long num_conciertos = 100000;//100.000 numeros de conciertos
     private static long cod_concierto = 0;
     private static final long num_musicos = 1000000;//1.000.000 de musicos
     private static long cod_musico = 0;
@@ -128,8 +128,20 @@ public class GeneraDatos {
     }
     
     //Genera Conciertos de los distintos grupos
-    private static void generaConciertos(PrintWriter salida_conciertos, PrintWriter salida_entradas ){
-        //long
+    private static void generaConciertos(PrintWriter salida_conciertos, PrintWriter salida_entradas, long max_localidades){
+        String ciudad = "Ciudad";
+        String recinto = "rencinto";
+        long localidades = rand.nextInt((int) (num_entradas-num_conciertos))+1;
+        num_entradas = num_entradas-localidades;
+        num_conciertos--;
+        fecha.set(2017, ((int) (Math.random() * 12) + 1), ((int) (Math.random() * 30) + 1));
+        salida_conciertos.println(cod_concierto + "," + ffecha.format(fecha.getTime()) + "," + paises[rand.nextInt(paises.length)] + "," + ciudad + cod_concierto + "," + recinto + cod_concierto);
+        genera_entradas(salida_entradas, localidades, //---------------(max_precio_entradas-min_precio_entradas)+min_precio_entradas, cod_concierto);
+    }
+    
+    //Genera "Grupos tocan Conciertos", es la tabla que une los grupos con los conciertos que tocan
+    private static void generaGruposTocanConciertos(PrintWriter salida_grupos_tocan_conciertos, PrintWriter salida_conciertos, PrintWriter salida_entradas, long c_grupo){
+        
     }
     
     //Genera Músicos asignados a cada grupo
@@ -144,11 +156,11 @@ public class GeneraDatos {
         
         for (int i = 0; i<integrantes; i++){
             salida_musicos.println(cod_musico + "," + (10000000 + cod_musico)
-                    + DNI.letra((int) (10000000 + cod_musico)) + ", " + nombre
-                    + cod_musico + ", " + direccion + cod_musico + ", "
-                    + c_postal + ", " + ciudad + cod_musico + ", " + provincia
-                    + cod_musico + ", " + (telefono + cod_musico) + ", "
-                    + instrumentos + cod_musico + ", " + c_grupo);
+                    + DNI.letra((int) (10000000 + cod_musico)) + "," + nombre
+                    + cod_musico + "," + direccion + cod_musico + ","
+                    + c_postal + "," + ciudad + cod_musico + "," + provincia
+                    + cod_musico + "," + (telefono + cod_musico) + ","
+                    + instrumentos + cod_musico + "," + c_grupo);
             cod_musico++;
         }
     }
@@ -180,7 +192,7 @@ public class GeneraDatos {
             
             //Grupo A del loop
             generaMusicos(salida_musicos, cod_grupo, a);
-            salida_grupos.println(cod_grupo + ", " + nombre + cod_grupo + ", " + genero.getGenero() + ", " + paises[rand.nextInt(paises.length)] + ", " + titulo + cod_grupo + dominio);
+            salida_grupos.println(cod_grupo + "," + nombre + cod_grupo + "," + genero.getGenero() + "," + paises[rand.nextInt(paises.length)] + "," + titulo + cod_grupo + dominio);
             
             //Aumento de las variables usadas
             i++; cod_grupo++;
