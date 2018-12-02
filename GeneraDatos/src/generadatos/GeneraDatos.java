@@ -45,6 +45,7 @@ public class GeneraDatos {
     private static long cod_entrada = 0;
     private static final long min_precio_entradas = 20;//mínimo precio posible de las entradas
     private static final long max_precio_entradas = 100;//máximo precio posible de las entradas
+    private static final long max_conciertos = 100000;//100.000 numeros de conciertos
     private static long num_conciertos = 100000;//100.000 numeros de conciertos
     private static long cod_concierto = 0;
     private static final long num_musicos = 1000000;//1.000.000 de musicos
@@ -52,8 +53,6 @@ public class GeneraDatos {
     private static final long num_grupos = 200000;//200.000 de grupos
     private static long cod_grupo = 0;
     private static long num_discos = max_discos/num_grupos;
-    
-    private static final long num_registros = 1000;
     
     public static void main(String[] args) {
         //------------ Inicialización de variables comunes ---------------
@@ -67,6 +66,7 @@ public class GeneraDatos {
         
         //Inicialización y apertura de los ficheros de salida
         try {
+            PrintWriter salida_grupos_tocan_conciertos = new PrintWriter(new BufferedWriter(new FileWriter("datos_grupos_tocan_conciertos.csv")));
             PrintWriter salida_grupos = new PrintWriter(new BufferedWriter(new FileWriter("datos_grupos.csv")));
             PrintWriter salida_musicos = new PrintWriter(new BufferedWriter(new FileWriter("datos_musicos.csv")));
             PrintWriter salida_discos = new PrintWriter(new BufferedWriter(new FileWriter("datos_discos.csv")));
@@ -74,17 +74,19 @@ public class GeneraDatos {
             PrintWriter salida_conciertos = new PrintWriter(new BufferedWriter(new FileWriter("datos_conciertos.csv")));
             PrintWriter salida_entradas = new PrintWriter(new BufferedWriter(new FileWriter("datos_entradas.csv")));
             
-            PrintWriter salida = new PrintWriter(new BufferedWriter(new FileWriter("datos_.csv")));
+            generaGrupos(salida_grupos, salida_musicos, salida_discos, salida_canciones);
+            generaConciertos(salida_conciertos, salida_entradas);
+            generaGruposTocanConciertos(salida_grupos_tocan_conciertos);
             
-            for (int i = 1; i <= num_registros; i++){
-                texto = i + "";
-                
-                salida.println(texto);
-            }
-            
-            salida.close();
+            salida_grupos_tocan_conciertos.close();
+            salida_grupos.close();
+            salida_musicos.close();
+            salida_discos.close();
+            salida_canciones.close();
+            salida_conciertos.close();
+            salida_entradas.close();
         } catch (IOException ex) {
-            System.out.println("/!\\ - Fallo en la generación de datos de ");
+            System.out.println("/!\\ - Fallo en la generación de datos");
         }
     }
     
@@ -128,20 +130,45 @@ public class GeneraDatos {
     }
     
     //Genera Conciertos de los distintos grupos
-    private static void generaConciertos(PrintWriter salida_conciertos, PrintWriter salida_entradas, long max_localidades){
+    private static void generaConciertos(PrintWriter salida_conciertos, PrintWriter salida_entradas){
         String ciudad = "Ciudad";
         String recinto = "rencinto";
-        long localidades = rand.nextInt((int) (num_entradas-num_conciertos))+1;
-        num_entradas = num_entradas-localidades;
-        num_conciertos--;
+        
         fecha.set(2017, ((int) (Math.random() * 12) + 1), ((int) (Math.random() * 30) + 1));
-        salida_conciertos.println(cod_concierto + "," + ffecha.format(fecha.getTime()) + "," + paises[rand.nextInt(paises.length)] + "," + ciudad + cod_concierto + "," + recinto + cod_concierto);
-        genera_entradas(salida_entradas, localidades, //---------------(max_precio_entradas-min_precio_entradas)+min_precio_entradas, cod_concierto);
+        
+        long localidades = 0;
+        long i;
+        
+        for (i = 0; i < max_conciertos; i++){
+            
+            num_conciertos--;
+            if (num_conciertos > 0){
+                localidades = rand.nextInt((int) (num_entradas-num_conciertos))+1;// (Entradas disponibles - conciertos restantes)
+            } else {//si no quedan más conciertos por asignar, se toman las entradas restantes
+                localidades = num_entradas;
+            }
+            num_entradas = num_entradas-localidades;
+            
+            salida_conciertos.println(cod_concierto + "," + ffecha.format(fecha.getTime()) + "," + paises[rand.nextInt(paises.length)] + "," + ciudad + cod_concierto + "," + recinto + cod_concierto);
+            generaEntradas(salida_entradas, localidades, (rand.nextDouble()*(max_precio_entradas-min_precio_entradas))+((double) min_precio_entradas), cod_concierto);
+            
+            cod_concierto++;
+        }
+
     }
     
     //Genera "Grupos tocan Conciertos", es la tabla que une los grupos con los conciertos que tocan
-    private static void generaGruposTocanConciertos(PrintWriter salida_grupos_tocan_conciertos, PrintWriter salida_conciertos, PrintWriter salida_entradas, long c_grupo){
+    private static void generaGruposTocanConciertos(PrintWriter salida_grupos_tocan_conciertos){
+        long i;
+        cod_concierto = 0;
         
+        for (i = 0; i < num_grupos; i++){
+            for (int j = 0; j < 10; j++){//todos los grupos darán 10 conciertos
+                if (cod_concierto == max_conciertos) cod_concierto = 0;
+                salida_grupos_tocan_conciertos.println(i + "," + cod_concierto);
+                cod_concierto++;
+            }
+        }
     }
     
     //Genera Músicos asignados a cada grupo
@@ -166,7 +193,7 @@ public class GeneraDatos {
     }
     
     //Genera Grupos variando cantidad de integrantes, etc
-    private static void generaGrupos(PrintWriter salida_grupos, PrintWriter salida_musicos, PrintWriter salida_conciertos, PrintWriter salida_entradas){
+    private static void generaGrupos(PrintWriter salida_grupos, PrintWriter salida_musicos, PrintWriter salida_discos, PrintWriter salida_canciones){
         boolean flagm = true;//Indica si el nº de integrantes de a es 10 para contrarestar en la siguiente generación
         int a, b;
         String nombre = "nombre";
@@ -191,13 +218,22 @@ public class GeneraDatos {
             if (b == 0){ b++; flagm = false;}
             
             //Grupo A del loop
+            salida_grupos.println(cod_grupo + "," + nombre + cod_grupo + ","
+                    + genero.getGenero() + "," + paises[rand.nextInt(paises.length)]
+                    + "," + titulo + cod_grupo + dominio);
             generaMusicos(salida_musicos, cod_grupo, a);
-            salida_grupos.println(cod_grupo + "," + nombre + cod_grupo + "," + genero.getGenero() + "," + paises[rand.nextInt(paises.length)] + "," + titulo + cod_grupo + dominio);
+            generaDiscos(salida_discos, salida_canciones, cod_grupo);
             
             //Aumento de las variables usadas
             i++; cod_grupo++;
             //Grupo B del loop
+            salida_grupos.println(cod_grupo + "," + nombre + cod_grupo + ","
+                    + genero.getGenero() + "," + paises[rand.nextInt(paises.length)]
+                    + "," + titulo + cod_grupo + dominio);
+            generaMusicos(salida_musicos, cod_grupo, b);
+            generaDiscos(salida_discos, salida_canciones, cod_grupo);
             
+            cod_grupo++;
         }
     }
 }
