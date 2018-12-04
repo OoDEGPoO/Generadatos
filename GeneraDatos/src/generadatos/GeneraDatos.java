@@ -30,11 +30,11 @@ public class GeneraDatos {
     private static Genero genero;
     
     //------------ Ctes y Var comunes ------------
-    private static final String[] tipos_disco = {"CD", "Vinilo", "Digital"};
-    private static final String[] paises = {"España", "Francia", "Italia"
-            , "Reino Unido", "Portugal", "Alemania", "Holanda", "Noruega"
-            , "Rusia", "Canada", "EEUU", "Japon", "Nueva Zelanda", "Australia"
-            , "Argentina", "Chile", "Brasil", "Bulgaria", "Mexico", "Venezuela"};
+    private static final String[] tipos_disco = {"cd", "vinilo", "digital"};
+    private static final String[] paises = {"españa", "francia", "italia"
+            , "reino unido", "portugal", "alemania", "holanda", "noruega"
+            , "rusia", "canada", "eeuu", "japon", "nueva zelanda", "australia"
+            , "argentina", "chile", "brasil", "bulgaria", "mexico", "venezuela"};
     private static long cod_cancion = 0;
     private static final long max_discos = 1000000;//1.000.000 de discos en la base de datos
     private static long cod_disco = 0;
@@ -95,19 +95,19 @@ public class GeneraDatos {
     //Genera Canciones de un disco concreto
     private static void generaCanciones(PrintWriter salida_canciones, String compositor, Calendar fecha_g, long c_disco){
         int max = rand.nextInt(max_canciones_disco)+1;//numero de canciones a generar
-        String nombre = "Cancion";
+        String nombre = "cancion";
         
         for (int i = 1; i <= max; i++){
-            salida_canciones.println(cod_cancion+","+nombre+cod_cancion+","+compositor+","+ffecha.format(fecha_g.getTime())+","+
-                (rand.nextInt(max_duracion_canciones-min_duracion_canciones) + min_duracion_canciones)+","+c_disco);
+            salida_canciones.println(cod_cancion+","+nombre+cod_cancion+","+compositor+","+ffecha.format(fecha_g.getTime())+",00:0"+
+                (rand.nextInt(max_duracion_canciones-min_duracion_canciones) + min_duracion_canciones)+ ":00,"+c_disco);
             cod_cancion++;
         }
     }
     
     //Genera Discos de un grupo en concreto
     private static void generaDiscos(PrintWriter salida_discos, PrintWriter salida_canciones, long c_grupo){
-        String nombre = "Titulo";
-        String compositor = "Compositor";
+        String nombre = "titulo";
+        String compositor = "compositor";
         
         for (long i = 1; i <= num_discos; i++){
             fecha.set(2017, ((int) (Math.random() * 12) + 1), ((int) (Math.random() * 30) + 1));
@@ -119,8 +119,8 @@ public class GeneraDatos {
     
     //Genera Entradas de un concierto concreto
     private static void generaEntradas(PrintWriter salida_entradas, long max_localidades, double precio, long c_concierto){
-        String localidad = "Localidad";
-        String usuario = "Usuario";
+        String localidad = "localidad";
+        String usuario = "usuario";
         
         for (long i = 0; i < max_localidades; i++){
             salida_entradas.println(cod_entrada+","+localidad+i+","+precio+","
@@ -131,7 +131,7 @@ public class GeneraDatos {
     
     //Genera Conciertos de los distintos grupos
     private static void generaConciertos(PrintWriter salida_conciertos, PrintWriter salida_entradas){
-        String ciudad = "Ciudad";
+        String ciudad = "ciudad";
         String recinto = "rencinto";
         
         fecha.set(2017, ((int) (Math.random() * 12) + 1), ((int) (Math.random() * 30) + 1));
@@ -173,13 +173,13 @@ public class GeneraDatos {
     
     //Genera Músicos asignados a cada grupo
     private static void generaMusicos(PrintWriter salida_musicos, long c_grupo, int integrantes){
-        String nombre = "Musico";
-        String direccion = "Direccion";
+        String nombre = "musico";
+        String direccion = "direccion";
         int c_postal = 28800;
-        String ciudad = "Ciudad";
-        String provincia = "Provincia";
+        String ciudad = "ciudad";
+        String provincia = "provincia";
         long telefono = 900000000;
-        String instrumentos = "Instrumento";
+        String instrumentos = "instrumento";
         
         for (int i = 0; i<integrantes; i++){
             salida_musicos.println(cod_musico + "," + (10000000 + cod_musico)
@@ -219,7 +219,7 @@ public class GeneraDatos {
             
             //Grupo A del loop
             salida_grupos.println(cod_grupo + "," + nombre + cod_grupo + ","
-                    + genero.getGenero() + "," + paises[rand.nextInt(paises.length)]
+                    + genero.getGenero() + "," + rand.nextInt(paises.length)
                     + "," + titulo + cod_grupo + dominio);
             generaMusicos(salida_musicos, cod_grupo, a);
             generaDiscos(salida_discos, salida_canciones, cod_grupo);
@@ -228,7 +228,7 @@ public class GeneraDatos {
             i++; cod_grupo++;
             //Grupo B del loop
             salida_grupos.println(cod_grupo + "," + nombre + cod_grupo + ","
-                    + genero.getGenero() + "," + paises[rand.nextInt(paises.length)]
+                    + genero.getGenero() + "," + rand.nextInt(paises.length)
                     + "," + titulo + cod_grupo + dominio);
             generaMusicos(salida_musicos, cod_grupo, b);
             generaDiscos(salida_discos, salida_canciones, cod_grupo);
